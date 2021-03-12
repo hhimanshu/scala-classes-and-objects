@@ -12,6 +12,11 @@ object Currency {
   def createUSD(amount: Double): Currency = Currency("USD", amount)
   def createNZD(amount: Double): Currency = Currency("NZD", amount)
   def createCAD(amount: Double): Currency = Currency("CAD", amount)
+  implicit def string2Currency(money: String): Currency = {
+    val Array(code: String, value: String) = money.split("\\s")
+    val requestedAmount: Double = value.toDouble
+    Currency(code, requestedAmount)
+  }
 }
 
 class Currency(code: String, amount: Double, inUSD: Double) {
@@ -23,20 +28,10 @@ class Currency(code: String, amount: Double, inUSD: Double) {
 }
 
 object CurrencyRunner extends App {
-  val usd1 = Currency(code = "USD", amount = 100.12)
-  println(usd1)
-
-  val nzd1 = Currency(code = "NZD", amount = 100.12)
-  println(nzd1)
-
-  val cad1 = Currency(code = "CAD", amount = 100.12)
-  println(cad1)
-
-  import Currency._
-  val usd2 = createUSD(25)
-  val nzd2 = createNZD(25)
-  val cad2 = createCAD(25)
-  println(usd2)
+  import Currency.string2Currency
+  val nzd2: Currency = "NZD 25"
   println(nzd2)
+
+  val cad2: Currency = "CAD 30"
   println(cad2)
 }
