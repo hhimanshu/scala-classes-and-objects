@@ -31,10 +31,42 @@ class DepositsAccount(name: String) extends Account(name: String) {
   override def toString: String = s"Deposit Account id=${getId},name=${getName},dateOpened=${getDateOpened},accountType=${getAccountType}"
 }
 
-object AccountRunner extends App {
-  val ca1: Account = new CreditAccount("Travel Mastercard")
-  println(ca1)
-
-  val da1: Account = new DepositsAccount("Super Savings")
-  println(da1)
+trait Balance {
+  private var _balance: Double = 0
+  def getBalance: Double = _balance
+  def setBalance(newBalance: Double): Unit = _balance = newBalance
+  override def toString: String = s"Balance=${getBalance}"
 }
+
+trait AnnualFees extends Balance {
+  override def setBalance(newBalance: Double): Unit = super.setBalance(newBalance - 100)
+}
+
+trait HighSavings extends Balance {
+  override def setBalance(newBalance: Double): Unit = super.setBalance((newBalance + 500) * (1 + 0.50))
+}
+
+class PremiumSavingsAccount(name: String) extends DepositsAccount(name) with AnnualFees
+// class PremiumPromotionalSavingsAccount(name: String) extends DepositsAccount(name) with AnnualFees with HighSavings
+class PremiumPromotionalSavingsAccount(name: String) extends DepositsAccount(name) with HighSavings with AnnualFees
+
+object AccountRunner extends App {
+  val a1 = new PremiumSavingsAccount("Premium Savings Account")
+  a1.setBalance(999)
+  println(a1.getBalance)
+
+  val a2 = new PremiumPromotionalSavingsAccount("Premium Promotional Savings Account")
+  a2.setBalance(999)
+  println(a2.getBalance)
+}
+/*
+class C1
+class C2
+class C3
+class C4 extends C1 with C2 with C3
+
+trait T1
+trait T2
+trait T3
+trait T4 extends T1 with T2 with T3
+*/
