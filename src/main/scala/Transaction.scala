@@ -1,24 +1,21 @@
-trait User {
-  def getFirst: String
-  def getLast: String
-}
+import java.time.LocalDateTime
 
-trait Transaction {
-  this: User =>
-  def printAmountWithTransaction(amount: Double): Unit = {
-    val fullCustomerName = this.getFirst + " " + this.getLast
-    val tax = amount * 0.10 // 10%
-    println(s"$fullCustomerName paid $tax on amount of $amount")
-  }
-}
-
-class DebitTransaction(val first: String, val last: String) extends User with Transaction {
-  override def getFirst: String = first
-
-  override def getLast: String = last
-}
+case class Transaction(name: String, amount: Double, kind: String, when: LocalDateTime)
 
 object TransactionRunner extends App {
-  val transaction = new DebitTransaction("Tony", "Stark")
-  transaction.printAmountWithTransaction(999)
+  private val when = LocalDateTime.now
+  val t1 = Transaction("T1", 12.22, "debit", when)
+  println(t1.toString)
+
+  val t2 = Transaction("T1", 12.22, "debit", when)
+  println(t1 == t2)
+  println(t1.hashCode())
+
+  val t3 = t1.copy(name = "T3", amount = 100.23)
+  println(t3)
+
+  val amount = t3 match {
+    case Transaction(_, amount, kind, _) if kind == "debit" && amount > 20  => amount - 20
+  }
+  println(amount)
 }
